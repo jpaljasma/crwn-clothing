@@ -1,9 +1,15 @@
 import React from "react";
+import { withRouter } from "react-router-dom"; // withRouter is a higher order component
+
 import "./menu-item.styles.scss";
 
-const MenuItem = ({ title, imageUrl, size, linkUrl }) => {
+// by using withRouter HOC we now have access to history and match from Route
+const MenuItem = ({ title, imageUrl, size, linkUrl, history, match }) => {
   return (
-    <div className={`menu-item ${size || ""}`}>
+    <div
+      className={`menu-item ${size || ""}`}
+      onClick={() => history.push(`${match.url}${linkUrl}`)}
+    >
       <div
         className="background-image"
         style={{
@@ -18,4 +24,4 @@ const MenuItem = ({ title, imageUrl, size, linkUrl }) => {
   );
 };
 
-export default MenuItem;
+export default withRouter(MenuItem);
