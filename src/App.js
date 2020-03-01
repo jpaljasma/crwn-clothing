@@ -1,32 +1,17 @@
-import React from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
-import './App.css';
-import HomePage from './pages/homepage/homepage.component';
-const HatsPage = () => {
-  return (
-    <div>
-      <h1>Hats Page</h1>
-    </div>
-  )
-};
-
-const FourOhFour = ({ location, match }) => {
-  return (
-    <div className='error'>
-      <h1>404</h1>
-      <p>The requested document <code>{location.pathname}</code> was not found.</p>
-      <p>Please proceed to <Link to={match.url}>home page</Link>.</p>
-    </div>
-  )
-}
+import React from "react";
+import { Switch, Route } from "react-router-dom";
+import "./App.scss";
+import HomePage from "./pages/homepage/homepage.component";
+import ShopPage from "./pages/shop/shop.component";
+import NotFound from "./pages/notfound/notfound.component";
 
 function App() {
   return (
     <div>
       <Switch>
-        <Route exact path='/' component={HomePage} />
-        <Route path='/hats' component={HatsPage} />
-        <Route component={FourOhFour} status={404}/>
+        <Route exact path="/" component={HomePage} />
+        <Route exact path="/shop" component={ShopPage} />
+        <Route component={NotFound} status={404} />
       </Switch>
     </div>
   );
