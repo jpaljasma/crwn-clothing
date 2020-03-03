@@ -6,12 +6,13 @@ import ShopPage from './pages/shop/shop.component';
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
 import NotFound from './pages/notfound/notfound.component';
 import Header from './components/header/header.component';
-import { auth } from './firebase/firebase.utils';
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
+      emailVerificationSent: false,
       currentUser: null
     };
   }
@@ -19,15 +20,50 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
-      this.setState({ currentUser: user }, () =>
-        console.log(this.state.currentUser)
-      );
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot(snapShot => {
+          const snapshotData = snapShot.data();
+          if(snapshotData.emailVerified) {
+            this.setState({
+              emailVerificationSent: true
+            });
+          }
+          else {
+            if(!this.state.emailVerificationSent) {
+              this.setState({
+                emailVerificationSent: true
+              });
+              // send verification email for once
+              console.log('Sending a verification email ...');
+              userAuth.sendEmailVerification().then(() => {
+                console.log('Verification e-mail sent!');
+              });
+            }
+          }
+          
+          this.setState({
+            currentUser: {
+              id: userRef.id,
+              ...snapshotData // spread in the snapshot data
+            }
+          }, () => {
+            console.log(this.state.currentUser)
+          });
+        });
+      } else {
+        // reset the state
+        this.setState({
+          emailVerificationSent: false,
+          currentUser: null
+        });
+      }
     });
   }
 
   componentWillUnmount() {
-    if(null !== this.unsubscribeFromAuth) {
+    if (null !== this.unsubscribeFromAuth) {
       this.unsubscribeFromAuth();
     }
   }
