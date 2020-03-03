@@ -25,7 +25,18 @@ class App extends React.Component {
         const userRef = await createUserProfileDocument(userAuth);
         userRef.onSnapshot(snapShot => {
           const snapshotData = snapShot.data();
-          if(snapshotData.emailVerified) {
+
+          // e-mail verified flag
+          if(userAuth.emailVerified !== snapshotData.emailVerified) {
+            snapshotData.emailVerified = userAuth.emailVerified;
+            userRef.update('emailVerified', snapshotData.emailVerified).then(()=>{
+              console.log('Email verified flag updated to ', snapshotData.emailVerified);
+            });
+          }
+          // set the email verifid flag
+          // userRef.emailVerified = userAuth.emailVerified;
+          
+          if(userAuth.emailVerified) {
             this.setState({
               emailVerificationSent: true
             });
@@ -48,8 +59,6 @@ class App extends React.Component {
               id: userRef.id,
               ...snapshotData // spread in the snapshot data
             }
-          }, () => {
-            console.log(this.state.currentUser)
           });
         });
       } else {

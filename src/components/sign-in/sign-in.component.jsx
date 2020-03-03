@@ -3,7 +3,8 @@ import React from 'react';
 import FormInput from '../form-input/form-input.component';
 import CustomButton from '../custom-button/custom-button.component';
 
-import { signInWithGoogle } from '../../firebase/firebase.utils';
+import EmailValidator from 'email-validator';
+import { signInWithGoogle, auth } from '../../firebase/firebase.utils';
 
 import './sign-in.styles.scss';
 
@@ -16,12 +17,31 @@ class SignIn extends React.Component {
     };
   }
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
-    this.setState({
-      email: '',
-      password: ''
-    });
+    const { email, password } = this.state;
+
+    if (0 === password.trim().length || 0 === email.trim().length) {
+      alert('Please enter an e-mail address and a passsword');
+      return;
+    }
+    if (!EmailValidator.validate(email)) {
+      alert("The e-mail address you provided isn't valid");
+      return;
+    }
+
+    try {
+      await auth.signInWithEmailAndPassword(email, password);  
+
+      this.setState({
+        email: '',
+        password: ''
+      });
+  
+    } catch (error) {
+      alert(error.message);
+      console.error(error);
+    }
   };
 
   handleChange = event => {
