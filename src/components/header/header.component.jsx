@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+// Connect is a HOC - higher-order component that wraps our current component to give it super powers
+import { connect } from 'react-redux';
 import { ReactComponent as Logo } from './../../assets/crown.svg';
 import { auth } from './../../firebase/firebase.utils';
 
@@ -31,4 +33,11 @@ const Header = ({ currentUser }) => (
   </div>
 );
 
-export default Header;
+// can be anything but mapStateToProps is standard with redux codebases
+// state - a root reducer
+const mapStateToProps = state => ({
+  currentUser: state.user.currentUser
+});
+
+// connect(state)(component)
+export default connect(mapStateToProps)(Header);
