@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import CustomButton from './../custom-button/custom-button.component';
 import CartItem from './../cart-item/cart-item.component';
 
+import { selectCartItems } from './../../redux/cart/cart.selectors';
+
 import './cart-dropdown.styles.scss';
 
 const CartDropdown = ({ cartItems }) => {
@@ -11,7 +13,7 @@ const CartDropdown = ({ cartItems }) => {
     <div className='cart-dropdown'>
       <div className='cart-items'>
         {cartItems.map(cartItem => (
-          <CartItem item={cartItem} />
+          <CartItem key={cartItem.id} item={cartItem} />
         ))}
       </div>
       <CustomButton>GO TO CHECKOUT</CustomButton>
@@ -19,9 +21,9 @@ const CartDropdown = ({ cartItems }) => {
   );
 };
 
-// destructure cart.cartItems
-const mapStateToProps = ({ cart: { cartItems } }) => ({
-  cartItems
+// ensures that cart does not get re-rendered when state changes unrelated to cart are triggering
+const mapStateToProps = state => ({
+  cartItems: selectCartItems(state)
 });
 
 export default connect(mapStateToProps)(CartDropdown);
