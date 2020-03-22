@@ -2,10 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 // Connect is a HOC - higher-order component that wraps our current component to give it super powers
 import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+
 import { ReactComponent as Logo } from './../../assets/crown.svg';
 import { auth } from './../../firebase/firebase.utils';
 import CartIcon from './../cart-icon/cart-icon.component';
 import CartDropdown from './../cart-dropdown/cart-dropdown.component';
+
+import { selectCurrentUser } from './../../redux/user/user.selectors';
+import { selectCartHidden } from './../../redux/cart/cart.selectors';
 
 import './header.styles.scss';
 
@@ -40,9 +45,10 @@ const Header = ({ currentUser, hidden }) => (
 
 // can be anything but mapStateToProps is standard with redux codebases
 // state - a root reducer
-const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
-  currentUser,
-  hidden
+// createStructuredSelector automatically passes our top level selector
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser,
+  hidden: selectCartHidden
 });
 
 // connect(state)(component)
